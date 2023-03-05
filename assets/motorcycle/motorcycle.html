@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Motorcycle Racing Game</title>
+    <style>
+      #canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <script>
+      // Define the canvas and its context
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      // Define the player's motorcycle
+      const player = {
+        x: 100,
+        y: 300,
+        speed: 5,
+        width: 50,
+        height: 30,
+        color: "red",
+      };
+
+      // Define an array of obstacles
+      const obstacles = [];
+
+      // Define a function to create new obstacles
+      function createObstacle() {
+        const obstacle = {
+          x: canvas.width,
+          y: Math.random() * canvas.height,
+          width: 30,
+          height: 50,
+          color: "blue",
+        };
+        obstacles.push(obstacle);
+      }
+
+      // Define a function to update the game state
+      function update() {
+        // Move the player's motorcycle based on user input
+        if (keys.ArrowUp) {
+          player.y -= player.speed;
+        }
+        if (keys.ArrowDown) {
+          player.y += player.speed;
+        }
+
+        // Move the obstacles to the left
+        for (let i = 0; i < obstacles.length; i++) {
+          obstacles[i].x -= player.speed;
+        }
+
+        // Create a new obstacle every 100 frames
+        if (frame % 100 === 0) {
+          createObstacle();
+        }
+
+        // Check for collisions between the player and obstacles
+        for (let i = 0; i < obstacles.length; i++) {
+          if (
+            player.x < obstacles[i].x + obstacles[i].width &&
+            player.x + player.width > obstacles[i].x &&
+            player.y < obstacles[i].y + obstacles[i].height &&
+            player.y + player.height > obstacles[i].y
+          ) {
+            // The player has collided with an obstacle, so end the game
+            gameOver();
+          }
+        }
+
+        // Increment the frame count
+        frame++;
+      }
+
+      // Define a function to draw the game
+      function draw() {
+        // Clear the canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw the player's motorcycle
+        ctx.fillStyle = player.color;
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+
+        // Draw the obstacles
+        for (let i = 0; i < obstacles.length; i++) {
+          ctx.fillStyle = obstacles[i].color;
+          ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
+        }
+      }
+
+      // Define a function to end the game
+      function gameOver() {
+        // Stop the game loop
+        clearInterval(intervalId);
+
+        // Display the game over message
+        alert("Game over!");
+      }
+
+      // Initialize the game
+      let keys = {};
+      let frame = 0;
+      let intervalId = setInterval(function () {
+        update();
+        draw();
+      }, 1000 / 60);
+
+      // Add event listeners for user input
+      document.addEventListener("keydown", function (event) {
+        keys[event.code] = true;
+      });
+      document.addEventListener("keyup", function (event) {
+        keys[event.keyCode] = false;
+});
+document.addEventListener("keydown", function (event) {
+  keys[event.keyCode] = true;
+});
+
+function gameLoop() {
+  clearCanvas();
+
+  updateMotorcycle();
+  updateObstacles();
+  drawMotorcycle();
+  drawObstacles();
+
+  if (detectCollision()) {
+    gameOver();
+    return;
+  }
+
+  score += 1;
+  drawScore();
+  requestAnimationFrame(gameLoop);
+}
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function updateMotorcycle() {
+  if (keys[LEFT_ARROW]) {
+    motorcycle.x -= motorcycle.speed;
+  }
+  if (keys[RIGHT_ARROW]) {
+    motorcycle.x += motorcycle.speed;
+  }
+  if (motorcycle.x < 0) {
+    motorcycle.x = 0;
+  }
+  if (motorcycle.x + motorcycle.width > canvas.width) {
+    motorcycle.x = canvas.width - motorcycle.width;
+  }
+}
+
+function drawMotorcycle() {
+  ctx.drawImage(motorcycle.image, motorcycle.x, motorcycle.y, motorcycle.width, motorcycle.height);
+}
+
+function updateObstacles() {
+  for (var i = 0; i < obstacles.length; i++) {
+    obstacles[i].y += obstacleSpeed;
+    if (obstacles[i].y > canvas.height) {
+      obstacles.splice(i, 1);
+      i--;
+    }
+  }
+  if (obstacleTimer == 0) {
+    obstacles.push(generateObstacle());
+    obstacleTimer = obstacleFrequency;
+  } else {
+    obstacleTimer--;
+  }
+}
+
+function drawObstacles() {
+  for (var i = 0; i < obstacles.length; i++) {
+    ctx.drawImage(obstacles[i].image, obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
+  }
+}
+
+function generateObstacle() {
+  var obstacle = {
+    x: Math.random() * (canvas.width - obstacleWidth),
+    y: -obstacleHeight,
+    width: obstacleWidth,
+    height: obstacleHeight,
+    image: obstacleImage
+  };
+  return obstacle;
+}
+
+function detectCollision() {
+  for (var i = 0; i < obstacles.length; i++) {
+    if (motorcycle.x < obstacles[i].x + obstacles[i].width &&
+        motorcycle.x + motorcycle.width > obstacles[i].x &&
+        motorcycle.y < obstacles[i].y + obstacles[i].height &&
+        motorcycle.y + motorcycle.height > obstacles[i].y) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function drawScore() {
+  ctx.fillStyle = "white";
+  ctx.font = "24px Arial";
+  ctx.fillText("Score: " + score, 10, 30);
+}
+
+function gameOver() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "red";
+  ctx.font = "48px Arial";
+  ctx.fillText("Game Over!", canvas.width/2 - 150, canvas.height/2 - 24);
+  ctx.fillStyle = "white";
+  ctx.font = "24px Arial";
+  ctx.fillText("Final Score: " + score, canvas.width/2 - 70, canvas.height/2 + 20);
+}
