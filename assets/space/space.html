@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Space Game</title>
+	<style>
+		canvas {
+			border: 1px solid #000;
+		}
+	</style>
+</head>
+<body>
+
+	<canvas id="gameCanvas"></canvas>
+
+	<script>
+
+		// Initialize canvas
+		var canvas = document.getElementById("gameCanvas");
+		var ctx = canvas.getContext("2d");
+
+		// Set canvas dimensions
+		canvas.width = 800;
+		canvas.height = 600;
+
+		// Set background image
+		var bgImage = new Image();
+		bgImage.src = "https://i.imgur.com/4f4G60w.jpg";
+
+		// Set player image
+		var playerImage = new Image();
+		playerImage.src = "https://i.imgur.com/8WwteF6.png";
+
+		// Initialize player position
+		var playerX = 350;
+		var playerY = 500;
+
+		// Initialize player movement
+		var playerSpeed = 5;
+		var playerDirection = "";
+
+		// Set enemy image
+		var enemyImage = new Image();
+		enemyImage.src = "https://i.imgur.com/yAYBpxY.png";
+
+		// Initialize enemy position
+		var enemyX = 350;
+		var enemyY = -50;
+
+		// Initialize enemy movement
+		var enemySpeed = 3;
+
+		// Set game loop interval
+		var gameLoop = setInterval(update, 10);
+
+		// Set player movement
+		document.addEventListener("keydown", function(event) {
+			if (event.key == "ArrowLeft") {
+				playerDirection = "left";
+			} else if (event.key == "ArrowRight") {
+				playerDirection = "right";
+			}
+		});
+
+		document.addEventListener("keyup", function(event) {
+			if (event.key == "ArrowLeft" || event.key == "ArrowRight") {
+				playerDirection = "";
+			}
+		});
+
+		// Update game
+		function update() {
+
+			// Clear canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// Draw background image
+			ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+
+			// Draw player image
+			if (playerDirection == "left") {
+				playerX -= playerSpeed;
+			} else if (playerDirection == "right") {
+				playerX += playerSpeed;
+			}
+			if (playerX < 0) {
+				playerX = 0;
+			}
+			if (playerX > canvas.width - playerImage.width) {
+				playerX = canvas.width - playerImage.width;
+			}
+			ctx.drawImage(playerImage, playerX, playerY);
+
+			// Draw enemy image
+			enemyY += enemySpeed;
+			if (enemyY > canvas.height) {
+				enemyX = Math.random() * (canvas.width - enemyImage.width);
+				enemyY = -50;
+			}
+			ctx.drawImage(enemyImage, enemyX, enemyY);
+
+			// Check for collision
+			if (playerX < enemyX + enemyImage.width &&
+				playerX + playerImage.width > enemyX &&
+				playerY < enemyY + enemyImage.height &&
+				playerY + playerImage.height > enemyY) {
+				clearInterval(gameLoop);
+				alert("Game Over!");
+			}
+
+		}
+
+	</script>
+
+</body>
+</html>
