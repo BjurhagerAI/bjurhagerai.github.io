@@ -26,12 +26,6 @@ const maze = [
 const cellSize = canvas.width / mazeWidth;
 const cellPadding = 2;
 
-// Set the position of the cheese
-let cheeseX = mazeWidth - 1;
-let cheeseY = mazeHeight - 1;
-
-
-
 // Draw the maze on the canvas
 function drawMaze() {
 	// Loop through each cell in the maze
@@ -44,12 +38,8 @@ function drawMaze() {
 			// Draw the cell as a rectangle
 			ctx.fillStyle = maze[y][x] === 0 ? "#333" : "#eee";
 			ctx.fillRect(xPos, yPos, cellSize - cellPadding, cellSize - cellPadding);
-			// Draw the cheese
-			if (x === cheeseX && y === cheeseY) {
-				drawCheese(xPos, yPos);
 		}
 	}
-    }
 }
 
 // Draw the player (mouse) on the canvas
@@ -72,17 +62,6 @@ function drawPlayer() {
   reset();
   }
   }
-
-  // Draw the cheese on the canvas
-  function drawCheese(x, y) {
-	// Calculate the coordinates of the cheese on the canvas
-	const xPos = x + cellSize / 2;
-	const yPos = y + cellSize / 2;
-  // Draw the cell as a rectangle
-            ctx.fillStyle = maze[y][x] === 0 ? "#333" : "#eee";
-            ctx.fillRect(xPos, yPos, cellSize - cellPadding, cellSize - cellPadding);
-          }
-        }
 
   // Reset the game to its initial state
   function reset() {
@@ -127,5 +106,3 @@ function drawPlayer() {
   // Draw the initial state of the maze and player
   drawMaze();
   drawPlayer();
-  drawCheese();
-  checkWin();
